@@ -38,6 +38,16 @@ app.get('/info', (request, response) => {
   response.send(info)
 })
 
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const amountBefore = people.length
+  people = people.filter(pers => pers.id !== id)
+  const notInList = !people.find(pers => pers.id == id);
+
+  (notInList && amountBefore > people.length) ? response.status(204).end()
+  : response.status(404).send({error:"404 Not found"})
+})
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
