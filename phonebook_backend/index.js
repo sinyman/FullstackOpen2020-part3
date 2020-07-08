@@ -42,16 +42,37 @@ app.get('/info', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
   const maxRange = 500
+  const validation = validateBody(body)
 
-  const newPerson = {
-    name: body.name,
-    number: body.number,
-    id: Math.round(Math.random()*maxRange)
+  if(validation[0]) {
+    const newPerson = {
+      name: body.name,
+      number: body.number,
+      id: Math.round(Math.random()*maxRange)
+    }
+
+    people.push(newPerson)
+    response.redirect('/api/persons')
+  } else {
+    response.status(validation[1]).send({ error:validation[2] })
   }
-  
-  people.push(newPerson)
-  response.redirect('/api/persons')
 })
+
+// Validate POST body input
+const validateBody = body => {
+  if(!body.name) {
+    return [false, 409, "Name is missing!"]
+
+  } else if (!body.number) {
+    return [false, 409, "Number is missing!"]
+
+  } else if (people.find(pers => pers.name === body.name)) {
+    return [false, 409, "This name already exists in the phonebook!"]
+
+  } else {
+    return [true]
+  }
+}
 
 // DELETE people from phonebook
 app.delete('/api/persons/:id', (request, response) => {
