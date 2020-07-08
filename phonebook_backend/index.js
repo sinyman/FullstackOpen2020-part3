@@ -13,10 +13,22 @@ let people = [
 
 // GET all numbers
 app.get('/api/persons', (request, response) => {
-  console.log("HEAD:",new Date().toISOString())
   response.json(people)
 })
 
+// GET specific phonebook entry
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = people.find(x => x.id === id)
+
+  if(person) {
+    response.json(person)
+  } else {
+    response.status(404).send({error:"404 Not found"})
+  }
+})
+
+// GET Phonebook info
 app.get('/info', (request, response) => {
 
   let info = `<b>Phonebook has info for ${people.length} people</b>
