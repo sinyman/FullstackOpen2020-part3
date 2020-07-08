@@ -38,6 +38,22 @@ app.get('/info', (request, response) => {
   response.send(info)
 })
 
+// POST add new people to phonebook
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+  const maxRange = 500
+
+  const newPerson = {
+    name: body.name,
+    number: body.number,
+    id: Math.round(Math.random()*maxRange)
+  }
+  
+  people.push(newPerson)
+  response.redirect('/api/persons')
+})
+
+// DELETE people from phonebook
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   const amountBefore = people.length
