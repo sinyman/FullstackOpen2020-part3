@@ -1,9 +1,11 @@
 const express = require('express')
+const cors = require('cors')
 var moment = require('moment') // For easier time/date management
 var morgan = require('morgan')
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 const morganConf = morgan((tokens, req, res) => {
@@ -74,7 +76,7 @@ app.post('/api/persons', (request, response) => {
     }
 
     people.push(newPerson)
-    response.redirect('/api/persons')
+    response.status(201).send(newPerson)
   } else {
     response.status(validation[1]).send({ error:validation[2] })
   }
