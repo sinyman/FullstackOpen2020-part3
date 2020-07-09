@@ -3,7 +3,7 @@ This is the submission directory for part 3
 
 [Link to main repo](https://github.com/sinyman/HY-Fullstack-2019)
 
-[Link to Backend Heroku-app](http://fso-sinyman.herokuapp.com/api/persons)
+[Link to Heroku-app](http://fso-sinyman.herokuapp.com)
 
 ## Hours used
 |What's been done                     |Hours used|
