@@ -1,8 +1,28 @@
 const express = require('express')
 var moment = require('moment') // For easier time/date management
+var morgan = require('morgan')
+
 const app = express()
 
 app.use(express.json())
+
+const morganConf = morgan((tokens, req, res) => {
+  let baseConf = [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms'
+  ]
+
+  if(baseConf[0] === 'POST') {
+    baseConf.push(JSON.stringify(req.body))
+  }
+
+  return baseConf.join(' ')
+})
+
+app.use(morganConf)
 
 let people = [
     { name: 'Edsger Dijkstra', number: '040-123456', id:1 },
