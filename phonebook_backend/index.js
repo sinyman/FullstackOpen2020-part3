@@ -15,6 +15,8 @@ const morganConf = morgan((tokens, req, res) => {
     tokens['response-time'](req, res), 'ms'
   ]
 
+  // Don't know whether it would be better practise to create a morgan token for
+  // this, but I feel like this is a compact and neat solution so I am keeping it
   if(baseConf[0] === 'POST') {
     baseConf.push(JSON.stringify(req.body))
   }
