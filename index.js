@@ -8,6 +8,8 @@ const Number = require('./models/number')
 
 const app = express()
 
+//  ------------- MIDDLEWARE ------------------------------
+
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
@@ -32,12 +34,7 @@ const morganConf = morgan((tokens, req, res) => {
 
 app.use(morganConf)
 
-let people = [
-    { name: 'Edsger Dijkstra', number: '040-123456', id:1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id:2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id:3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id:4 }
-  ]
+//  ------------- ROUTES ------------------------------
 
 // GET all numbers
 app.get('/api/persons', (request, response) => {
@@ -51,7 +48,7 @@ app.get('/api/persons/:id', (request, response) => {
     if(res) {
       response.json(res)
     } else {
-      response.status(404).send({error:"404 Not found"})
+      response.status(404).send({ status:404, error:" Not found" })
     }
   })
 })
@@ -92,9 +89,6 @@ const validateBody = body => {
   } else if (!body.number) {
     return [false, 409, "Number is missing!"]
 
-  } else if (people.find(pers => pers.name === body.name)) {
-    return [false, 409, "This name already exists in the phonebook!"]
-
   } else {
     return [true]
   }
@@ -102,15 +96,17 @@ const validateBody = body => {
 
 // DELETE people from phonebook
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const amountBefore = people.length
-  people = people.filter(pers => pers.id !== id)
-  const notInList = !people.find(pers => pers.id == id);
-
-  (notInList && amountBefore > people.length) ? response.status(204).end()
-  : response.status(404).send({error:"404 Not found"})
+  Number.findByIdAndDelete(request.params.id)
+  .then(res => {
+    if(!res) {
+      response.status(404).send({ status:404, error:" Not found" })
+    } else {
+      response.status(204).end()
+    }
+  })
 })
 
+//  ------------- MISC SETUP & START ------------------------------
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
