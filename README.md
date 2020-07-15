@@ -15,4 +15,4 @@ This is the submission directory for part 3
 |Figuring out Heroku & exercise 3.10  |  3h      |
 |Exercise 3.11                        |  1h      |
 |Exercise 3.12                        |  2h      |
-|Exercise 3.13-3.14                   |  2h      |
+|Exercise 3.13-3.15                   |  3h      |
