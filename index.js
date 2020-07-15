@@ -1,7 +1,10 @@
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 var moment = require('moment') // For easier time/date management
 var morgan = require('morgan')
+
+const Number = require('./models/number')
 
 const app = express()
 
@@ -38,48 +41,46 @@ let people = [
 
 // GET all numbers
 app.get('/api/persons', (request, response) => {
-  response.json(people)
+  Number.find({})
+    .then(res => response.json(res))
 })
 
 // GET specific phonebook entry
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = people.find(x => x.id === id)
-
-  if(person) {
-    response.json(person)
-  } else {
-    response.status(404).send({error:"404 Not found"})
-  }
+  Number.findById(request.params.id).then(res => {
+    if(res) {
+      response.json(res)
+    } else {
+      response.status(404).send({error:"404 Not found"})
+    }
+  })
 })
 
 // GET Phonebook info
 app.get('/info', (request, response) => {
-
-  let info = `<b>Phonebook has info for ${people.length} people</b>
-              </br></br>
-              ${moment().format('ddd MMM D YYYY HH:mm:ss [GMT]ZZ [(Eastern European Standard Time)]')}`
-
-  response.send(info)
+  Number.countDocuments({})
+  .then(res => {
+    response.send(`<b>Phonebook has info for ${res} people</b>
+                </br></br>
+                ${moment().format('ddd MMM D YYYY HH:mm:ss zZZ')}`)
+  })
 })
 
 // POST add new people to phonebook
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  const maxRange = 500
   const validation = validateBody(body)
 
   if(validation[0]) {
-    const newPerson = {
+    const number = new Number({
       name: body.name,
-      number: body.number,
-      id: Math.round(Math.random()*maxRange)
-    }
+      number: body.number
+    })
+    number.save()
+    .then(res => response.json(res))
 
-    people.push(newPerson)
-    response.status(201).send(newPerson)
   } else {
-    response.status(validation[1]).send({ error:validation[2] })
+    response.status(validation[1]).send({ status: validation[1], error:validation[2] })
   }
 })
 
