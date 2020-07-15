@@ -37,13 +37,14 @@ app.use(morganConf)
 //  ------------- ROUTES ------------------------------
 
 // GET all numbers
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
   Number.find({})
     .then(res => response.json(res))
+    .catch(error => next(error))
 })
 
 // GET specific phonebook entry
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Number.findById(request.params.id).then(res => {
     if(res) {
       response.json(res)
@@ -51,16 +52,18 @@ app.get('/api/persons/:id', (request, response) => {
       response.status(404).send({ status:404, error:" Not found" })
     }
   })
+  .catch(error => next(error))
 })
 
 // GET Phonebook info
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   Number.countDocuments({})
   .then(res => {
     response.send(`<b>Phonebook has info for ${res} people</b>
                 </br></br>
                 ${moment().format('ddd MMM D YYYY HH:mm:ss zZZ')}`)
   })
+  .catch(error => next(error))
 })
 
 // POST add new people to phonebook
@@ -95,16 +98,52 @@ const validateBody = body => {
 }
 
 // DELETE people from phonebook
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Number.findByIdAndDelete(request.params.id)
   .then(res => {
     if(!res) {
-      response.status(404).send({ status:404, error:" Not found" })
+      response.status(404).send({ status:404, error:"Not found" })
     } else {
       response.status(204).end()
     }
   })
+  .catch(error => next(error))
 })
+
+// Change specific phonebook entry
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+
+  const number = {
+    name: body.name,
+    number: body.number
+  }
+
+  Number.findByIdAndUpdate(request.params.id, number, { new:true })
+    .then(res => {
+      response.status(201).json(res)
+    })
+  .catch(error => next(error))
+})
+
+//  ------------- ERROR HANDLING MIDDLEWARE ------------------------------
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+// Handles all requests to unknown endpoints
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+
+  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+    return response.status(400).send({ status:400, error: 'Malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 //  ------------- MISC SETUP & START ------------------------------
 const PORT = process.env.PORT || 3001
