@@ -78,19 +78,6 @@ app.post('/api/persons', (request, response, next) => {
   .catch(error => next(error))
 })
 
-// Validate POST body input
-const validateBody = body => {
-  if(!body.name) {
-    return [false, 409, "Name is missing!"]
-
-  } else if (!body.number) {
-    return [false, 409, "Number is missing!"]
-
-  } else {
-    return [true]
-  }
-}
-
 // DELETE people from phonebook
 app.delete('/api/persons/:id', (request, response, next) => {
   Number.findByIdAndDelete(request.params.id)
@@ -113,7 +100,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number
   }
 
-  Number.findByIdAndUpdate(request.params.id, number, { new:true })
+  Number.findByIdAndUpdate(request.params.id, number, { runValidators: true, new:true })
     .then(res => {
       response.status(201).json(res)
     })
