@@ -1,3 +1,4 @@
+const process = require('process')
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
@@ -49,21 +50,21 @@ app.get('/api/persons/:id', (request, response, next) => {
     if(res) {
       response.json(res)
     } else {
-      response.status(404).send({ status:404, error:" Not found" })
+      response.status(404).send({ status:404, error:'Not found' })
     }
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 // GET Phonebook info
 app.get('/info', (request, response, next) => {
   Number.countDocuments({})
-  .then(res => {
-    response.send(`<b>Phonebook has info for ${res} people</b>
-                </br></br>
-                ${moment().format('ddd MMM D YYYY HH:mm:ss zZZ')}`)
-  })
-  .catch(error => next(error))
+    .then(res => {
+      response.send(`<b>Phonebook has info for ${res} people</b>
+      </br></br>
+      ${moment().format('ddd MMM D YYYY HH:mm:ss zZZ')}`)
+    })
+    .catch(error => next(error))
 })
 
 // POST add new people to phonebook
@@ -74,21 +75,21 @@ app.post('/api/persons', (request, response, next) => {
     number: body.number
   })
   number.save()
-  .then(res => response.json(res))
-  .catch(error => next(error))
+    .then(res => response.json(res))
+    .catch(error => next(error))
 })
 
 // DELETE people from phonebook
 app.delete('/api/persons/:id', (request, response, next) => {
   Number.findByIdAndDelete(request.params.id)
-  .then(res => {
-    if(!res) {
-      response.status(404).send({ status:404, error:"Not found" })
-    } else {
-      response.status(204).end()
-    }
-  })
-  .catch(error => next(error))
+    .then(res => {
+      if(!res) {
+        response.status(404).send({ status:404, error:'Not found' })
+      } else {
+        response.status(204).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 // Change specific phonebook entry
@@ -109,9 +110,9 @@ app.put('/api/persons/:id', (request, response, next) => {
     .then(res => {
       response.status(201).json(res)
     })
-  .catch(error => {
-    next(error)
-  })
+    .catch(error => {
+      next(error)
+    })
 })
 
 //  ------------- ERROR HANDLING MIDDLEWARE ------------------------------
@@ -124,7 +125,7 @@ app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
 
-  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return response.status(400).send({ status:400, error: 'Malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ status:400, error: error.message })
@@ -136,7 +137,7 @@ const errorHandler = (error, request, response, next) => {
 app.use(errorHandler)
 
 //  ------------- MISC SETUP & START ------------------------------
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT ||3001
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
 })

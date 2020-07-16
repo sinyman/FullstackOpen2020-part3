@@ -1,3 +1,4 @@
+const process = require('process')
 const mongoose = require('mongoose')
 
 if (process.argv.length < 3) {
@@ -33,7 +34,7 @@ if(!process.argv[3]) {
     mongoose.connection.close()
   })
 } else {
-  number.save().then(result => {
+  number.save().then(() => {
     console.log('number saved!')
     mongoose.connection.close()
   })

@@ -17,3 +17,4 @@ This is the submission directory for part 3
 |Exercise 3.12                        |  2h      |
 |Exercise 3.13-3.15                   |  3h      |
 |Exercise 3.16-3.18                   |  2h      |
+|Exercise 3.19-3.22                   |  3h      |

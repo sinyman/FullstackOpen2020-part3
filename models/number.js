@@ -1,14 +1,15 @@
+const process = require('process')
 const mongoose = require('mongoose')
-var validator = require('mongoose-unique-validator');
+var validator = require('mongoose-unique-validator')
 
 mongoose.set('useFindAndModify', false)
-mongoose.set('useCreateIndex', true);
+mongoose.set('useCreateIndex', true)
 
 const url = process.env.MONGODB_URI
 
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(result => console.log(`MongoDB connection succesful!`))
-  .catch(error => console.log(`Error: couldn't connect to MongoDB`))
+  .then(() => console.log('MongoDB connection succesful!'))
+  .catch(() => console.log('Error: could not connect to MongoDB'))
 
 const numberSchema = new mongoose.Schema({
   name: {
