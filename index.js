@@ -67,21 +67,15 @@ app.get('/info', (request, response, next) => {
 })
 
 // POST add new people to phonebook
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  const validation = validateBody(body)
-
-  if(validation[0]) {
-    const number = new Number({
-      name: body.name,
-      number: body.number
-    })
-    number.save()
-    .then(res => response.json(res))
-
-  } else {
-    response.status(validation[1]).send({ status: validation[1], error:validation[2] })
-  }
+  const number = new Number({
+    name: body.name,
+    number: body.number
+  })
+  number.save()
+  .then(res => response.json(res))
+  .catch(error => next(error))
 })
 
 // Validate POST body input
@@ -138,6 +132,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError' && error.kind == 'ObjectId') {
     return response.status(400).send({ status:400, error: 'Malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ status:400, error: error.message })
   }
 
   next(error)
