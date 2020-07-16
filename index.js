@@ -99,12 +99,19 @@ app.put('/api/persons/:id', (request, response, next) => {
     name: body.name,
     number: body.number
   }
+  const options = {
+    runValidators: true,
+    new:true,
+    context: 'query'
+  }
 
-  Number.findByIdAndUpdate(request.params.id, number, { runValidators: true, new:true })
+  Number.findByIdAndUpdate(request.params.id, number, options)
     .then(res => {
       response.status(201).json(res)
     })
-  .catch(error => next(error))
+  .catch(error => {
+    next(error)
+  })
 })
 
 //  ------------- ERROR HANDLING MIDDLEWARE ------------------------------
